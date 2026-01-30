@@ -20,10 +20,14 @@ const ctx = canvas.getContext('2d');
 // Particle array
 let nodes = [];
 
+// Mouse state
+const mouse = { x: -1000, y: -1000, active: false, radius: 120, strength: 0.8 };
+
 // Statistics
 const stats = {
     edgeCount: 0,
-    avgConnections: 0
+    avgConnections: 0,
+    density: 0
 };
 
 // Resize canvas to fill viewport
@@ -57,6 +61,26 @@ class Node {
     }
 
     update() {
+        // Mouse repulsion
+        if (mouse.active) {
+            const dx = this.x - mouse.x;
+            const dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < mouse.radius && dist > 0) {
+                const force = (1 - dist / mouse.radius) * mouse.strength;
+                this.vx += (dx / dist) * force;
+                this.vy += (dy / dist) * force;
+            }
+        }
+
+        // Dampen velocity to prevent runaway speeds
+        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        const maxSpeed = 3.0;
+        if (speed > maxSpeed) {
+            this.vx = (this.vx / speed) * maxSpeed;
+            this.vy = (this.vy / speed) * maxSpeed;
+        }
+
         // Apply velocity with speed multiplier
         this.x += this.vx * config.nodeSpeed;
         this.y += this.vy * config.nodeSpeed;
@@ -175,6 +199,8 @@ function drawEdges() {
     stats.avgConnections = nodes.length > 0
         ? (connectionCounts.reduce((a, b) => a + b, 0) / nodes.length).toFixed(1)
         : 0;
+    const maxEdges = (nodes.length * (nodes.length - 1)) / 2;
+    stats.density = maxEdges > 0 ? (edgeCount / maxEdges * 100).toFixed(1) : 0;
 }
 
 // Main animation loop
@@ -205,3 +231,14 @@ window.addEventListener('load', () => {
 
 // Handle window resize
 window.addEventListener('resize', resizeCanvas);
+
+// Mouse tracking
+canvas.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+});
+
+canvas.addEventListener('mouseleave', () => {
+    mouse.active = false;
+});

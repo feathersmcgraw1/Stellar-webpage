@@ -25,19 +25,54 @@ body {
     display: block;
 }
 
-/* Control Panel */
+/* Control Panel - Collapsible Side Panel */
 #controls {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 280px;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    background: rgba(10, 10, 20, 0.92);
+    border-right: 1px solid rgba(100, 150, 255, 0.3);
+    padding: 30px 20px 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.35s ease;
+}
+
+#controls.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Panel Toggle Button */
+#panel-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 200;
+    width: 40px;
+    height: 40px;
     background: rgba(10, 10, 20, 0.85);
     border: 1px solid rgba(100, 150, 255, 0.3);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 8px;
+    color: #a0c0ff;
+    font-size: 1.3rem;
+    cursor: pointer;
     backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    z-index: 100;
+    transition: left 0.35s ease, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#panel-toggle:hover {
+    background: rgba(40, 50, 80, 0.85);
+}
+
+#controls:not(.collapsed) ~ #panel-toggle {
+    left: 308px;
 }
 
 #controls h2 {
@@ -139,12 +174,10 @@ body {
 /* Responsive Design */
 @media (max-width: 600px) {
     #controls {
-        width: calc(100% - 40px);
-        top: auto;
-        bottom: 20px;
-        right: 20px;
-        left: 20px;
-        max-height: 50vh;
-        overflow-y: auto;
+        width: 260px;
+    }
+
+    #controls:not(.collapsed) ~ #panel-toggle {
+        left: 268px;
     }
 }

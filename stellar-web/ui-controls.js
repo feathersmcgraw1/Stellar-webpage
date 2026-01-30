@@ -104,12 +104,24 @@ function updateStats() {
     statsDiv.innerHTML = `
         <div>Edges: <span>${stats.edgeCount}</span></div>
         <div>Avg Connections: <span>${stats.avgConnections}</span></div>
+        <div>Network Density: <span>${stats.density}%</span></div>
     `;
+}
+
+// Toggle panel visibility
+function initPanelToggle() {
+    const panel = document.getElementById('controls');
+    const toggle = document.getElementById('panel-toggle');
+
+    toggle.addEventListener('click', () => {
+        panel.classList.toggle('collapsed');
+    });
 }
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     initControls();
+    initPanelToggle();
 
     // Update stats every 500ms
     setInterval(updateStats, 500);
